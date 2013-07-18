@@ -2,6 +2,22 @@
 // Author: Luc Martel
 // Updated: 8/7/13
 
+// Helper functions
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+function dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(',')[1]);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: 'image/jpeg' });
+}
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+
 // Check if it exists
 function hasGetUserMedia() {
    // Note: Opera is unprefixed.
@@ -10,8 +26,15 @@ function hasGetUserMedia() {
       navigator.mozGetUserMedia || navigator.msGetUserMedia);
 }
 
+// Multimedia elements
 var localMediaStream = null;
-var video = document.querySelector('#camera-window');
+var video  = document.querySelector('#camera-window');
+var still  = document.querySelector('#still-window');
+var context = still.getContext('2d');
+var timer = undefined;
+
+// WebSockets
+var ws_vdata = new WebSocket("ws://127.0.0.1:8901");
 
 // Didn't work -> At least play Big Buck Bunny :) 
 function capture_fallback(e) {
@@ -25,6 +48,16 @@ function capture_success(stream) {
    video.src = window.URL.createObjectURL(stream);
    video.controls = true;
    localMediaStream = stream;
+   
+   still.width = video.clientWidth;
+   still.height = video.clientHeight;
+   
+   timer = setInterval( function () {
+                           context.drawImage(video, 0, 0, still.width, still.height);
+                           var data = still.toDataURL('image/jpeg', 1.0);
+                           newBlob = dataURItoBlob(data);
+                           ws_vdata.send(newBlob);
+                        }, 1000);
 }
 
 function capture(tracks) {
@@ -46,5 +79,10 @@ function capture(tracks) {
 }
 function stop() {
    video.pause();
-   localMediaStream.stop();
+   if (localMediaStream) {
+      localMediaStream.stop();
+   }
+   if (timer) {
+      clearInterval(timer);
+   }
 }

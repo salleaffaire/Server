@@ -11,6 +11,12 @@
         background: rgba(255,255,255,0.5);
         border: 1px solid #ccc;
       }
+      canvas {
+        width: 320px;
+        height: 240px;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid #ccc;
+      }
       .grayscale {
         -webkit-filter: grayscale(1);
       }
@@ -24,7 +30,9 @@
    
    </head>
    <body>
-      <h3 id="toc-basic-demo">Basic demo</h3>
+      <h3 id="toc-basic-demo"> Cognitive Guard Demo </h3>
+      <!-- Camera Live Stream -->
+      <!-- <video> element id has to be "camera-window" -->
       <div style="text-align:center;">
          <video id="camera-window" autoplay></video>
          <p> 
@@ -32,10 +40,15 @@
             <button id="stop-button"> Stop </button>
          </p>         
       </div>
+       
+      <!-- Individual Images-->
+      <!-- <canvas> element id has to be "still-window" -->
+      <div style="text-align:center;">
+         <canvas id="still-window" style="diaplay: inline";> </canvas>
+      </div>
       
-      <!-- Camera Capture Scripts -->
-      <!-- <video> element id has to be "camera-window" -->
-      <script type="text/javascript" = src="JavaScript/test_mediacap.js">
+
+      <script type="text/javascript" = src="js/test_mediacap.js">
       </script>
       
       <!-- Adding button event listeners -->
