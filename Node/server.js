@@ -47,6 +47,8 @@ console.log("Static file server running on port: %d", static_file_server_port);
 // Web socket server - listening for video packets
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------ 
+
+/*
 if (start_web_socket) {
    var WebSocketServer = require('ws').Server,
     wss = new WebSocketServer({port: video_data_server_port});
@@ -59,3 +61,4 @@ if (start_web_socket) {
       // ws.send('something');
    });
 }
+*/

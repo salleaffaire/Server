@@ -32,9 +32,11 @@ var video  = document.querySelector('#camera-window');
 var still  = document.querySelector('#still-window');
 var context = still.getContext('2d');
 var timer = undefined;
+var recorder;
 
 // WebSockets
 var ws_vdata = new WebSocket("ws://127.0.0.1:8901");
+
 
 // Didn't work -> At least play Big Buck Bunny :) 
 function capture_fallback(e) {
@@ -42,6 +44,7 @@ function capture_fallback(e) {
    video.src = 'big-buck-bunny_trailer.webm';
 }
 
+// Stream is a MediaStream object ?
 function capture_success(stream) {
    // Set the video source to the MediaStream object to render the video in the
    // browser
@@ -52,12 +55,18 @@ function capture_success(stream) {
    still.width = video.clientWidth;
    still.height = video.clientHeight;
    
+   // Blobed JPEG sent every second
+   
    timer = setInterval( function () {
                            context.drawImage(video, 0, 0, still.width, still.height);
                            var data = still.toDataURL('image/jpeg', 1.0);
                            newBlob = dataURItoBlob(data);
                            ws_vdata.send(newBlob);
                         }, 1000);
+   
+
+   // Connect the MediaStream to the MediaStreamTransceiver
+   
 }
 
 function capture(tracks) {
@@ -72,6 +81,7 @@ function capture(tracks) {
 
       // Get user media -> pass the the MediaStream object to function(stream) if succesful  
       navigator.getUserMedia(tracks, capture_success, capture_fallback);
+      
    } else {
       console.log("IN HERE");
       alert('getUserMedia() is not supported in your browser');
@@ -86,3 +96,4 @@ function stop() {
       clearInterval(timer);
    }
 }
+ 
