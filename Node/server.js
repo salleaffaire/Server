@@ -9,7 +9,7 @@ var start_web_socket = 0;
 var static_file_server_port = 8900;
 var video_data_server_port  = 8901;
 
-var serving_from = "C:/travaux/cg/server/Demo"
+var serving_from = "C:/Users/lmartel/Travaux/Server/Demo"
 
 // Creating the HTTP static file server
 // ------------------------------------------------------------------------
@@ -24,7 +24,7 @@ my_http.createServer( function(request,response) {
           response.writeHeader(404, {"Content-Type": "text/plain"});
           response.write("404 Not Found\n");    
           response.end();  
-      }  
+      }
       else {  
          fs.readFile(full_path, "binary", function(err, file) {    
             if(err) {    

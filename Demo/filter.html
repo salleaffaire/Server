@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+
+<title> JS Image Processing Test Page</title>
+
+<!-- When we finish the codelab we'll move CSS and JavaScript to separate files -->
+
+<!-- CSS will go here -->
+<style>
+
+</style>
+
+</head>
+
+<body onload="onLoad();">
+
+<!-- HTML will go here -->
+<figure>
+  <img id="before_image" tyle="border:1px solid black;"> </img>
+  <figcaption> The original test image </figcaption>
+  <button onclick="grayscale()"> Grayscale the image </button>
+</figure>
+
+<canvas id="after_image" style="border:1px solid black;">
+  Your browser does not support the canvas tag.
+</canvas>
+
+
+<!-- JavaScript will go here -->
+<script type="text/javascript">
+
+var canvas;
+var context;
+var imageURL;
+var imageFilter;
+
+var image_in = document.getElementById("before_image");
+
+// grayscale filter using an arithmetic average of the color 
+// components
+grayscale = function (imagedata, args) {
+  var d = imagedata.data;
+  for (var i = 0; i < d.length; i += 4) {
+    var r = d[i];
+    var g = d[i + 1];
+    var b = d[i + 2];
+    d[i] = d[i + 1] = d[i + 2] = (r+g+b)/3;
+  }
+  return imagedata;
+};
+
+// apply a filter to the image data contained in the canvas object
+function filterCanvas(filter) {
+  if (canvas.width > 0 && canvas.height > 0) {
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    filter(imageData);
+    context.putImageData(imageData, 0, 0);
+  }
+}
+
+// load the image specified by the imageURL and apply
+// the filter imageFilter
+function update() {
+  document.getElementById("before_image").src = imageURL;
+  var image = new Image();
+
+  // Make sure image has loaded 
+  // hook to onload 
+  image.addEventListener("load", function () {
+
+    // Set canvas size to be the image size
+    if (image.width != canvas.width)
+      canvas.width = image.width;
+    if (image.height != canvas.height)
+      canvas.height = image.height;
+
+    // No need to clear
+    // context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Copy the image
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    
+    // Process in place - can't be the best way
+    filterCanvas(imageFilter);
+  }, false);
+
+  // Load the image
+  image.src = imageURL;
+}
+
+// Reset to default image and filter
+function reset() {
+  imageURL = "test2.jpeg";
+  imageFilter = grayscale;
+
+  update();
+}
+
+function onLoad() {
+  canvas = document.querySelector("#after_image");
+  context = canvas.getContext("2d");
+
+  reset();
+}
+
+
+</script>
+
+
+</body>
+
+</html>
