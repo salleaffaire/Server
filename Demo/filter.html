@@ -32,63 +32,72 @@
 <!-- JavaScript will go here -->
 <script type="text/javascript">
 
-var canvas;
-var context;
+var canvas_out;
+var context_out;
+
 var imageURL;
 var imageFilter;
 
-var image_in = document.getElementById("before_image");
-
 // grayscale filter using an arithmetic average of the color 
 // components
-grayscale = function (imagedata, args) {
-  var d = imagedata.data;
-  for (var i = 0; i < d.length; i += 4) {
-    var r = d[i];
-    var g = d[i + 1];
-    var b = d[i + 2];
-    d[i] = d[i + 1] = d[i + 2] = (r+g+b)/3;
+grayscale = function (imagedata_out, imagedata_in, args) {
+  var d_out = imagedata_out.data;
+  var d_in = imagedata_in.data;
+
+  for (var i = 0; i < d_in.length; i += 4) {
+    var r = d_in[i];
+    var g = d_in[i + 1];
+    var b = d_in[i + 2];
+    // Set R = G = B = average of input data
+    d_out[i]   = d_out[i + 1] = d_out[i + 2] = (r+g+b)/3;
+    // Don't forget alpha - 255 is no transparency
+    d_out[i+3] = 255; 
   }
-  return imagedata;
 };
 
 // apply a filter to the image data contained in the canvas object
-function filterCanvas(filter) {
-  if (canvas.width > 0 && canvas.height > 0) {
-    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    filter(imageData);
-    context.putImageData(imageData, 0, 0);
+function filterCanvas(filter, imagedata_out, imagedata_in) {
+  if (canvas_out.width > 0 && canvas_out.height > 0) {
+    console.log("Filtering ...");
+    filter(imagedata_out, imagedata_in);
+    context_out.putImageData(imagedata_out, 0, 0);
   }
 }
 
 // load the image specified by the imageURL and apply
 // the filter imageFilter
 function update() {
-  document.getElementById("before_image").src = imageURL;
-  var image = new Image();
+  var image_in = document.getElementById("before_image");
+  image_in.src = imageURL;
 
   // Make sure image has loaded 
   // hook to onload 
-  image.addEventListener("load", function () {
+  image_in.addEventListener("load", function () {
 
     // Set canvas size to be the image size
-    if (image.width != canvas.width)
-      canvas.width = image.width;
-    if (image.height != canvas.height)
-      canvas.height = image.height;
-
-    // No need to clear
-    // context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas_out.width = image_in.width;
+    canvas_out.height = image_in.height;
     
+    var canvas_in = document.createElement('canvas');;
+    var context_in = canvas_in.getContext("2d");;
+    canvas_in.width = image_in.width;
+    canvas_in.height = image_in.height;
+    
+    console.log(canvas_out.width);
+    console.log(canvas_out.height);
+
     // Copy the image
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    context_in.drawImage(image_in, 0, 0);
+
+    var imagedata_out = context_out.getImageData(0, 0, canvas_out.width, canvas_out.height);
+    var imagedata_in = context_in.getImageData(0, 0, canvas_in.width, canvas_in.height);
     
     // Process in place - can't be the best way
-    filterCanvas(imageFilter);
+    filterCanvas(imageFilter, imagedata_out, imagedata_in);
   }, false);
 
-  // Load the image
-  image.src = imageURL;
+  // Load the input image
+  image_in.src = imageURL;
 }
 
 // Reset to default image and filter
@@ -100,8 +109,8 @@ function reset() {
 }
 
 function onLoad() {
-  canvas = document.querySelector("#after_image");
-  context = canvas.getContext("2d");
+  canvas_out = document.getElementById("after_image");
+  context_out = canvas_out.getContext("2d");
 
   reset();
 }

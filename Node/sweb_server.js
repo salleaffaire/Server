@@ -4,12 +4,10 @@ path = require("path"),
 url = require("url"),  
 fs = require("fs");
 
-var start_web_socket = 0;
-
 var static_file_server_port = 8900;
-var video_data_server_port  = 8901;
 
-var serving_from = "C:/Users/lmartel/Travaux/Server/Demo"
+//var serving_from = "C:/Users/lmartel/Travaux/Server/Demo"
+var serving_from = "C:/Travaux/CG/Server/Demo"
 
 // Creating the HTTP static file server
 // ------------------------------------------------------------------------
@@ -44,21 +42,3 @@ my_http.createServer( function(request,response) {
 console.log("Static file server running on port: %d", static_file_server_port);
 // ------------------------------------------------------------------------
 
-// Web socket server - listening for video packets
-// ------------------------------------------------------------------------
-// ------------------------------------------------------------------------ 
-
-/*
-if (start_web_socket) {
-   var WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({port: video_data_server_port});
-
-   wss.on('connection', function(ws) {
-      console.log("WS connected - listening to port: %d", video_data_server_port);
-      ws.on('message', function(message) {
-         console.log('received something - hope it looks like a JPEG');
-      });
-      // ws.send('something');
-   });
-}
-*/
